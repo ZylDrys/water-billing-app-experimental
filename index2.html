@@ -1,0 +1,1133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#4a90e2">
+    <title>💧 Water Billing System</title>
+    <style>
+        /* === SOOTHING COLOR THEMES === */
+        :root {
+            --bg-light: #f8f9fa;
+            --card-light: #ffffff;
+            --text-light: #2c3e50;
+            --muted-light: #7f8c8d;
+            --line-light: #ecf0f1;
+            
+            --bg-dark: #0f172a;
+            --card-dark: #1e293b;
+            --text-dark: #f8fafc;
+            --muted-dark: #94a3b8;
+            --line-dark: #334155;
+                        --primary: #4a90e2; /* Soothing blue */
+            --primary-hover: #357ab8;
+            --success: #2ed573; /* Mint green */
+            --success-dark: #28a745;
+            --warn: #fbbf24; /* Soft amber */
+            --warn-text: #0f172a;
+            --danger: #ef4444;
+            --radius: 12px;
+            --shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+        
+        /* DARK MODE OVERRIDES */
+        body.theme-dark {
+            --bg: var(--bg-dark);
+            --card: var(--card-dark);
+            --text: var(--text-dark);
+            --muted: var(--muted-dark);
+            --line: var(--line-dark);
+        }
+                /* LIGHT MODE OVERRIDES */
+        body.theme-light {
+            --bg: var(--bg-light);
+            --card: var(--card-light);
+            --text: var(--text-light);
+            --muted: var(--muted-light);
+            --line: var(--line-light);
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html, body { height: 100%; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { 
+            background: var(--bg); 
+            color: var(--text);             padding: 16px;
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+                .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: var(--card);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 24px;
+        }
+        
+        h1, h2 { 
+            color: var(--text); 
+            margin: 0 0 16px 0; 
+            font-weight: 600;
+        }
+        
+        label {
+            display: block;
+            font-weight: 600;
+            color: var(--muted);
+            margin: 12px 0 6px 0;
+            font-size: 15px;
+        }
+        
+        /* === BUTTONS === */
+        button {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 14px 18px;
+            border-radius: var(--radius);
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 15px;
+            width: 100%;
+            transition: background 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        button:hover { 
+            background: var(--primary-hover); 
+            transform: translateY(-1px);
+        }
+        button:active { transform: translateY(0); }
+                button.secondary {
+            background: transparent;
+            color: var(--text);
+            border: 2px solid var(--line);
+        }
+        button.secondary:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+        
+        button.success { 
+            background: var(--success);         }
+        button.success:hover { 
+            background: var(--success-dark); 
+        }
+        
+        button.danger {             background: var(--danger); 
+        }
+        
+        button.small {
+            width: auto;
+            padding: 10px 14px;
+            font-size: 13px;
+            margin-right: 8px;
+        }
+        
+        button.toggle {
+            background: none;
+            color: var(--muted);
+            border: 1px dashed var(--line);
+            border-radius: 8px;
+            padding: 6px 10px;
+            font-size: 12px;
+            width: auto;
+        }
+        button.toggle:hover {
+            color: var(--primary);
+            border-color: var(--primary);
+        }
+        
+        /* === INPUTS === */
+        input, select {
+            width: 100%;
+            padding: 14px;
+            margin: 8px 0 16px 0;
+            border: 2px solid var(--line);
+            border-radius: var(--radius);
+            font-size: 16px;
+            background: var(--card);
+            color: var(--text);
+        }
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(74,144,226,0.15);
+        }
+        
+        input[readonly] {
+            background: #f8f9fa;
+            color: var(--muted);
+        }
+        
+        /* === PASSWORD FIELD WITH TOGGLE === */
+        .pass-wrapper {
+            position: relative;
+        }
+        .pass-wrapper .toggle {
+            position: absolute;
+            right: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            padding: 0;
+        }
+        
+        /* === TABLES === */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 16px 0;
+            font-size: 14px;
+        }
+        th, td {
+            border: 1px solid var(--line);
+            padding: 12px;
+            text-align: left;
+        }
+        th {
+            background: var(--primary);
+            color: #fff;
+            font-weight: 600;
+        }
+        tr:nth-child(even) {
+            background: var(--bg);
+        }
+        
+        /* === SECTIONS & LAYOUT === */
+        .section { display: none; }
+        .section.active { display: block; }
+        
+        .total-display {
+            background: var(--success);
+            color: #fff;
+            padding: 18px;
+            border-radius: var(--radius);
+            text-align: center;
+            margin: 18px 0;
+            font-size: 20px;
+            font-weight: 700;
+        }
+        .total-display .label {
+            font-size: 14px;
+            opacity: 0.9;
+            margin-bottom: 6px;
+        }
+        
+        .nav-buttons {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        .nav-buttons button.full-width {
+            grid-column: span 2;
+        }
+        
+        .form-group { margin: 12px 0; }
+        .form-row {             display: grid; 
+            grid-template-columns: 1fr 1fr; 
+            gap: 12px; 
+        }
+        
+        .sort-controls {
+            display: flex;
+            gap: 10px;
+            margin: 14px 0;
+            flex-wrap: wrap;
+        }
+        .sort-controls button {
+            width: auto;
+            font-size: 13px;
+            padding: 10px 12px;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 30px 16px;
+            color: var(--muted);
+        }
+        .empty-state .icon {
+            font-size: 48px;
+            margin-bottom: 12px;
+        }
+        
+        .theme-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            margin: 12px 0;
+        }
+        .theme-bar .label {
+            font-weight: 600;
+            color: var(--muted);
+        }
+        
+        /* === PRINT STYLES (80mm THERMAL PAPER) === */
+        @media print {
+            body { 
+                background: white; 
+                padding: 0; 
+                margin: 0;
+            }
+            .container {
+                max-width: 80mm;
+                width: 80mm;
+                margin: 0;
+                padding: 6mm;
+                box-shadow: none;
+                border-radius: 0;
+                background: white;
+            }
+            .no-print { display: none !important; }
+            .print-only { display: block !important; }
+            
+            #printReceipt {
+                font-size: 10pt;
+                line-height: 1.4;
+            }
+            #printReceipt h2 {
+                text-align: center;
+                font-size: 14pt;
+                font-weight: bold;
+                margin-bottom: 4mm;
+            }
+            #printReceipt .divider {
+                border-top: 1px dashed #000;
+                margin: 3mm 0;
+            }
+            #printReceipt table {
+                width: 100%;
+                border-collapse: collapse;
+                margin: 3mm 0;
+            }
+            #printReceipt table td {
+                border: none;
+                padding: 1mm 0;
+            }
+            #printReceipt .total-row {
+                font-size: 12pt;
+                font-weight: bold;
+                border-top: 1px solid #000;
+                margin-top: 3mm;
+                padding-top: 3mm;
+                text-align: center;
+            }
+            #printReceipt .footer {
+                text-align: center;
+                font-size: 8pt;
+                margin-top: 5mm;
+                padding-top: 3mm;
+                border-top: 1px dashed #000;
+            }
+        }
+        .print-only { display: none; }
+    </style>
+</head>
+<body class="theme-light">
+    <!-- === LOGIN GATE === -->
+    <div id="loginSection" class="container" style="text-align:center;">
+        <div style="margin-bottom:24px;">
+            <h2 style="font-size:22px; margin-bottom:8px;">💧 Water Billing</h2>
+            <p style="color:var(--muted); font-size:14px;">Secure Access Required</p>
+        </div>
+        
+        <div class="theme-bar">
+            <span class="label">Theme:</span>
+            <button onclick="setAppTheme('light')" class="small">☀️ Light</button>
+            <button onclick="setAppTheme('dark')" class="small">🌙 Dark</button>
+        </div>
+        
+        <div class="form-group">
+            <label>Enter App Password</label>
+            <div class="pass-wrapper">
+                <input type="password" id="loginPassword" placeholder="Password">
+                <button type="button" class="toggle" id="toggleLogin" 
+                        onclick="togglePassword('loginPassword', 'toggleLogin')">
+                    👁️                </button>
+            </div>
+        </div>
+        
+        <div class="form-group" id="confirmSection" style="display:none;">
+            <label>Confirm Password <small>(first time only)</small></label>
+            <div class="pass-wrapper">
+                <input type="password" id="loginConfirm" placeholder="Re-type password">
+                <button type="button" class="toggle" id="toggleConfirm" 
+                        onclick="togglePassword('loginConfirm', 'toggleConfirm')">
+                    👁️
+                </button>
+            </div>
+        </div>
+        
+        <button onclick="unlockApp()" style="margin-top:16px;">Unlock App</button>
+        <div style="margin-top:12px; font-size:13px; color:var(--muted);">
+            Default password: <code>admin123</code><br>
+            Change it in Settings after first login
+        </div>
+    </div>
+    
+    <!-- === MAIN APP INTERFACE === -->
+    <div id="appSection" style="display:none;">
+        <div class="container">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+                <h1 style="font-size:20px; margin:0;">💧 Water Billing</h1>
+                <button onclick="lockApp()" class="small danger" style="width:auto;">🔒 Lock</button>
+            </div>
+            
+            <!-- MAIN MENU -->
+            <div id="menuSection" class="section active">
+                <div class="nav-buttons">
+                    <button onclick="showSection('newBillSection')" class="success full-width">
+                        ➕ New Bill
+                    </button>
+                    <button onclick="showSection('customersSection')">
+                        👥 Manage Customers
+                    </button>
+                    <button onclick="showSection('historySection')">
+                        📋 History
+                    </button>
+                    <button onclick="showSection('settingsSection')" class="full-width" 
+                            style="background:var(--warn); color:var(--warn-text);">
+                        ⚙️ Settings
+                    </button>
+                    <button onclick="exportToExcel()" class="full-width no-print" 
+                            style="background:transparent; color:var(--text); border:2px solid var(--line);">
+                        📊 Export to Excel
+                    </button>
+                </div>
+                
+                <div style="background:var(--card); padding:16px; border-radius:var(--radius); margin-top:16px; border:1px solid var(--line);">
+                    <h3 style="margin-bottom:10px; color:var(--text); font-size:15px;">📈 Quick Stats</h3>
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+                        <div style="background:var(--bg); padding:14px; border-radius:var(--radius); text-align:center;">
+                            <div id="totalCustomers" style="font-size:22px; font-weight:bold; color:var(--primary);">0</div>
+                            <div style="font-size:13px; color:var(--muted);">Customers</div>
+                        </div>
+                        <div style="background:var(--bg); padding:14px; border-radius:var(--radius); text-align:center;">
+                            <div id="totalBills" style="font-size:22px; font-weight:bold; color:var(--success);">0</div>
+                            <div style="font-size:13px; color:var(--muted);">Total Bills</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- SETTINGS SECTION -->
+            <div id="settingsSection" class="section">
+                <button onclick="showSection('menuSection')" class="secondary back-button no-print">← Back to Menu</button>
+                <h2>⚙️ System Settings</h2>
+                
+                <div class="form-group">
+                    <label>Price per Cubic Meter</label>
+                    <div class="pass-wrapper">
+                        <input type="number" id="adminPricePerCubic" step="0.01" 
+                               placeholder="Enter rate (e.g., 1.50)">
+                        <button type="button" class="toggle" id="toggleAdminPrice" 
+                                onclick="togglePassword('adminPricePerCubic', 'toggleAdminPrice')">
+                            👁️
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Minimum Charge (if usage ≤ 0)</label>
+                    <div class="pass-wrapper">
+                        <input type="number" id="adminMinCharge" step="0.01" 
+                               placeholder="Enter minimum charge">
+                        <button type="button" class="toggle" id="toggleAdminMin" 
+                                onclick="togglePassword('adminMinCharge', 'toggleAdminMin')">
+                            👁️
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Admin Password</label>
+                    <div class="pass-wrapper">
+                        <input type="password" id="adminPassword" 
+                               placeholder="Enter current password to save changes">
+                        <button type="button" class="toggle" id="toggleAdminPass" 
+                                onclick="togglePassword('adminPassword', 'toggleAdminPass')">
+                            👁️                        </button>
+                    </div>
+                </div>
+                
+                <button onclick="saveSettings()" style="margin-top:16px;">💾 Save Settings</button>
+                <div style="margin-top:12px; font-size:13px; color:var(--muted);">
+                    Note: You must enter your current password above to save changes
+                </div>
+            </div>
+            
+            <!-- CUSTOMERS SECTION -->
+            <div id="customersSection" class="section">
+                <button onclick="showSection('menuSection')" class="secondary back-button no-print">← Back to Menu</button>
+                <h2>👥 Manage Customers</h2>
+                
+                <input type="text" id="customerSearch" placeholder="Search customer..." 
+                       class="search-box" oninput="filterCustomers()">
+                
+                <div class="sort-controls">
+                    <button onclick="sortCustomers('name', 'asc')">A→Z</button>
+                    <button onclick="sortCustomers('name', 'desc')">Z→A</button>
+                    <button onclick="sortCustomers('date', 'desc')">Newest First</button>
+                    <button onclick="sortCustomers('date', 'asc')">Oldest First</button>
+                </div>
+                
+                <div class="form-group">
+                    <input type="text" id="newCustomerName" placeholder="Enter customer name">
+                    <button onclick="addCustomer()">➕ Add Customer</button>
+                </div>
+                
+                <div id="customersList"></div>
+            </div>
+            
+            <!-- NEW BILL SECTION -->
+            <div id="newBillSection" class="section">
+                <button onclick="showSection('menuSection')" class="secondary back-button no-print">← Back to Menu</button>
+                <h2>📄 Create New Bill</h2>
+                
+                <input type="text" id="billCustomerSearch" placeholder="Search customer..." 
+                       class="search-box" oninput="filterBillCustomers()">
+                
+                <select id="billCustomer" onchange="loadLastReading()">
+                    <option value="">-- Select Customer --</option>
+                </select>
+                
+                <input type="date" id="billDate">
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Previous Reading (m³)</label>
+                        <input type="number" id="prevReading" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label>Present Reading (m³)</label>
+                        <input type="number" id="presReading" oninput="calculateTotal()">
+                    </div>
+                </div>
+                
+                <div class="total-display">
+                    <div class="label">Total Due</div>
+                    <span id="displayTotal">0.00</span>
+                </div>
+                
+                <div class="nav-buttons">
+                    <button onclick="saveBill(false)" class="no-print secondary">💾 Save Only</button>
+                    <button onclick="saveBill(true)" class="success full-width no-print">🖨️ Save & Print</button>
+                </div>
+            </div>
+            
+            <!-- HISTORY SECTION -->
+            <div id="historySection" class="section">
+                <button onclick="showSection('menuSection')" class="secondary back-button no-print">← Back to Menu</button>
+                <h2>📋 Transaction History</h2>
+                
+                <input type="text" id="historySearch" placeholder="Search by customer or date..." 
+                       class="search-box" oninput="filterHistory()">
+                
+                <div class="sort-controls">
+                    <button onclick="sortHistory('date', 'desc')">Newest First</button>
+                    <button onclick="sortHistory('date', 'asc')">Oldest First</button>
+                    <button onclick="sortHistory('amount', 'desc')">Highest Amount</button>
+                    <button onclick="sortHistory('amount', 'asc')">Lowest Amount</button>
+                </div>
+                                <select id="historyFilter" onchange="loadFilteredHistory()">
+                    <option value="all">All Customers</option>
+                </select>
+                
+                <div id="historyList"></div>
+            </div>
+                        <!-- HIDDEN PRINT AREA -->
+            <div id="printReceipt" class="print-only"></div>
+        </div>
+    </div>
+
+    <!-- SheetJS for Excel Export -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+    <script>
+        // === STORAGE KEYS ===
+        const STORAGE = {
+            customers: 'water_customers_v3',
+            bills: 'water_bills_v3',
+            settings: 'water_settings_v3',
+            session: 'water_session_v3'
+        };
+
+        // === DEFAULTS ===
+        const DEFAULT_SETTINGS = {
+            pricePerCubic: 1.50,
+            minCharge: 5.00,
+            currency: 'USD',
+            adminPassword: 'admin123' // CHANGE THIS AFTER FIRST SAVE
+        };
+        const DEFAULT_SESSION = { loggedIn: false, theme: 'light', lastLoginAt: null, setupComplete: false };
+
+        // === HELPERS ===        function getData(key) {
+            try { return JSON.parse(localStorage.getItem(STORAGE[key]) || '[]'); } catch (e) { return []; }
+        }
+        function saveData(key, data) {
+            localStorage.setItem(STORAGE[key], JSON.stringify(data));
+        }
+        function getSettings() {
+            try { return JSON.parse(localStorage.getItem(STORAGE.settings)) || DEFAULT_SETTINGS; }
+            catch (e) { return DEFAULT_SETTINGS; }
+        }
+        function saveSettingsData(settings) {
+            localStorage.setItem(STORAGE.settings, JSON.stringify(settings));
+        }
+        function getSession() {
+            try { return JSON.parse(localStorage.getItem(STORAGE.session)) || DEFAULT_SESSION; }
+            catch (e) { return DEFAULT_SESSION; }
+        }
+        function saveSession(sess) {
+            localStorage.setItem(STORAGE.session, JSON.stringify(sess));
+        }
+
+        // === PASSWORD TOGGLE ===
+        function togglePassword(inputId, buttonId) {
+            const input = document.getElementById(inputId);
+            const button = document.getElementById(buttonId);
+            if (!input || !button) return;
+            
+            const isPassword = input.type === 'password';
+            input.type = isPassword ? 'text' : 'password';
+            button.textContent = isPassword ? '🔒' : '👁️';
+        }
+
+        // === THEME HANDLING ===
+        function setAppTheme(theme) {
+            const sess = getSession();
+            sess.theme = theme;
+            saveSession(sess);
+            document.body.classList.remove('theme-light', 'theme-dark');
+            document.body.classList.add('theme-' + theme);
+        }
+
+        function applyThemeFromSession() {
+            const sess = getSession();
+            if (sess.theme) {
+                document.body.classList.remove('theme-light', 'theme-dark');
+                document.body.classList.add('theme-' + sess.theme);
+            }
+        }
+
+        // === CURRENCY FORMATTING ===
+        function currencySymbol(cur) {
+            if (cur === 'PHP') return '₱';
+            if (cur === 'EUR') return '€';
+            return '$';
+        }
+        function formatMoney(amount) {
+            const settings = getSettings();
+            const fmt = new Intl.NumberFormat('en-US', {
+                style: 'currency',
+                currency: settings.currency === 'PHP' ? 'PHP' :                          settings.currency === 'EUR' ? 'EUR' : 'USD',
+                minimumFractionDigits: 2
+            });
+            return fmt.format(amount);
+        }
+
+        // === LOGIN FLOW ===
+        function unlockApp() {
+            const loginPassword = document.getElementById('loginPassword').value;
+            const confirm = document.getElementById('loginConfirm')?.value;
+            const currentSettings = getSettings();
+            const sess = getSession();
+            
+            // First-time setup: require confirmation
+            if (!sess.setupComplete) {
+                if (loginPassword !== confirm) {
+                    alert('❌ Passwords do not match! Please try again.');
+                    return;
+                }
+                if (loginPassword.length < 4) {
+                    alert('❌ Password must be at least 4 characters');
+                    return;
+                }
+                
+                // Save new password and mark setup complete
+                currentSettings.adminPassword = loginPassword;
+                saveSettingsData(currentSettings);
+                sess.setupComplete = true;
+            } 
+            // Normal login: check password
+            else {
+                if (loginPassword !== currentSettings.adminPassword) {
+                    alert('❌ Incorrect password!');
+                    return;
+                }
+            }
+            
+            // Success: log in
+            sess.loggedIn = true;
+            sess.lastLoginAt = new Date().toISOString();
+            saveSession(sess);
+            
+            document.getElementById('loginSection').style.display = 'none';
+            document.getElementById('appSection').style.display = 'block';
+            
+            // Clear fields
+            document.getElementById('loginPassword').value = '';
+            document.getElementById('loginConfirm')?.value = '';
+                        // Initialize app
+            loadCustomersList();
+            updateCurrencyDisplay();
+            applyThemeFromSession();
+        }
+
+        function lockApp() {
+            const sess = getSession();
+            sess.loggedIn = false;
+            saveSession(sess);
+            document.getElementById('appSection').style.display = 'none';
+            document.getElementById('loginSection').style.display = 'block';
+            
+            // Clear password fields on lock
+            document.getElementById('loginPassword').value = '';
+            document.getElementById('loginConfirm')?.value = '';
+            document.getElementById('adminPassword').value = '';
+        }
+
+        function updateCurrencyDisplay() {
+            const settings = getSettings();
+            const symbol = currencySymbol(settings.currency);
+            document.getElementById('displayCurrencySymbol')?.textContent = symbol;
+        }
+
+        // === SETTINGS HANDLING ===
+        function loadSettings() {
+            const settings = getSettings();
+            document.getElementById('adminPricePerCubic').value = settings.pricePerCubic;
+            document.getElementById('adminMinCharge').value = settings.minCharge;
+            document.getElementById('adminPassword').value = '';
+        }
+
+        function saveSettings() {
+            const password = document.getElementById('adminPassword').value;
+            const correctPassword = getSettings().adminPassword;
+            
+            if (password !== correctPassword) {
+                alert('❌ Incorrect password! Cannot save settings.');
+                return;
+            }
+            
+            const newPrice = parseFloat(document.getElementById('adminPricePerCubic').value);
+            const newMinCharge = parseFloat(document.getElementById('adminMinCharge').value);
+            
+            if (isNaN(newPrice) || newPrice < 0) {
+                alert('❌ Please enter a valid price per cubic meter');
+                return;
+            }
+            if (isNaN(newMinCharge) || newMinCharge < 0) {
+                alert('❌ Please enter a valid minimum charge');
+                return;
+            }
+            
+            const settings = getSettings();
+            settings.pricePerCubic = newPrice;
+            settings.minCharge = newMinCharge;
+            saveSettingsData(settings);
+            
+            alert('✅ Settings saved successfully!');
+            showSection('menuSection');
+            calculateTotal(); // Update current bill if open
+        }
+
+        // === CUSTOMERS ===
+        function addCustomer() {
+            const name = document.getElementById('newCustomerName').value.trim();
+            if (!name) return alert('Please enter customer name');
+
+            const customers = getData('customers');
+            if (customers.find(c => c.name.toLowerCase() === name.toLowerCase())) {
+                return alert('Customer already exists!');
+            }
+
+            customers.push({
+                id: Date.now(),
+                name: name,
+                createdAt: new Date().toISOString()
+            });
+            
+            saveData('customers', customers);
+            document.getElementById('newCustomerName').value = '';
+            loadCustomersList();
+            loadCustomerDropdowns();
+            alert('Customer added successfully!');
+        }
+
+        function deleteCustomer(id) {
+            if (!confirm('Delete this customer and all their bills?')) return;
+
+            const customers = getData('customers').filter(c => c.id !== id);
+            const bills = getData('bills').filter(b => b.customerId !== id);
+
+            saveData('customers', customers);
+            saveData('bills', bills);
+            loadCustomersList();
+            loadCustomerDropdowns();
+        }
+
+        function loadCustomersList(sortBy = 'name', order = 'asc') {
+            let customers = getData('customers');
+            
+            // Search filter
+            const searchTerm = document.getElementById('customerSearch')?.value.toLowerCase() || '';
+            if (searchTerm) {
+                customers = customers.filter(c => c.name.toLowerCase().includes(searchTerm));
+            }
+            
+            // Sorting
+            customers.sort((a, b) => {
+                if (sortBy === 'name') {
+                    return order === 'asc' ? 
+                        a.name.localeCompare(b.name) : 
+                        b.name.localeCompare(a.name);
+                } else if (sortBy === 'date') {
+                    return order === 'asc' ? 
+                        new Date(a.createdAt) - new Date(b.createdAt) : 
+                        new Date(b.createdAt) - new Date(a.createdAt);
+                }
+                return 0;
+            });
+
+            const container = document.getElementById('customersList');
+            if (customers.length === 0) {
+                container.innerHTML = '<p style="padding:20px; text-align:center; color:var(--muted);">No customers found.</p>';
+                return;
+            }
+
+            container.innerHTML = customers.map(c => `
+                <div style="padding:16px; border:1px solid var(--line); margin:12px 0; border-radius:var(--radius); background:var(--bg);">
+                    <strong>${c.name}</strong><br>
+                    <small style="color:var(--muted);">Added: ${new Date(c.createdAt).toLocaleDateString()}</small>
+                    <div style="margin-top:12px; display:flex; gap:10px;">
+                        <button onclick="viewCustomerHistory(${c.id})" class="small secondary">View Bills</button>
+                        <button onclick="deleteCustomer(${c.id})" class="small danger">Delete</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function viewCustomerHistory(customerId) {
+            showSection('historySection');
+            document.getElementById('historyFilter').value = customerId;
+            loadFilteredHistory();
+        }
+
+        function sortCustomers(by, order) {
+            loadCustomersList(by, order);
+        }
+
+        function filterCustomers() {
+            loadCustomersList();
+        }
+
+        function loadCustomerDropdowns() {
+            const customers = getData('customers');
+            const options = '<option value="">-- Select Customer --</option>' +
+                customers.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+
+            document.getElementById('billCustomer').innerHTML = options;
+            document.getElementById('historyFilter').innerHTML =
+                '<option value="all">All Customers</option>' +
+                customers.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+        }
+
+        function filterBillCustomers() {
+            const searchTerm = document.getElementById('billCustomerSearch').value.toLowerCase();
+            const select = document.getElementById('billCustomer');
+            const originalOptions = Array.from(select.options);
+            
+            select.innerHTML = '<option value="">-- Select Customer --</option>';
+                        originalOptions.forEach(opt => {
+                if (opt.value === "" || opt.text.toLowerCase().includes(searchTerm)) {
+                    select.appendChild(opt);
+                }
+            });
+        }
+
+        // === BILLING ===
+        function loadLastReading() {
+            const customerId = parseInt(document.getElementById('billCustomer').value);
+            if (!customerId) {
+                document.getElementById('prevReading').value = 0;
+                return;
+            }
+            
+            const bills = getData('bills').filter(b => b.customerId === customerId);
+            if (bills.length > 0) {
+                const lastBill = bills.sort((a, b) => new Date(b.date) - new Date(a.date))[0];
+                document.getElementById('prevReading').value = lastBill.presReading;
+            } else {
+                document.getElementById('prevReading').value = 0;
+            }
+            calculateTotal();
+        }
+
+        function calculateTotal() {
+            const settings = getSettings();
+            const prev = parseFloat(document.getElementById('prevReading').value) || 0;
+            const pres = parseFloat(document.getElementById('presReading').value) || 0;
+            const used = pres - prev;
+            
+            let totalDue;
+            if (used <= 0) {
+                totalDue = settings.minCharge;
+            } else {
+                totalDue = used * settings.pricePerCubic;
+            }
+                        document.getElementById('displayTotal').textContent = formatMoney(totalDue);
+        }
+
+        function clearBillForm() {
+            document.getElementById('billCustomer').value = '';
+            document.getElementById('prevReading').value = 0;
+            document.getElementById('presReading').value = '';
+            document.getElementById('displayTotal').textContent = formatMoney(0);
+            document.getElementById('billDate').value = new Date().toISOString().split('T')[0];
+        }
+
+        function saveBill(shouldPrint) {
+            const customerId = parseInt(document.getElementById('billCustomer').value);
+            if (!customerId) return alert('Please select a customer');
+            
+            const presReading = parseFloat(document.getElementById('presReading').value);
+            if (isNaN(presReading)) return alert('Please enter present reading');
+
+            const settings = getSettings();
+            const prevReading = parseFloat(document.getElementById('prevReading').value) || 0;
+            const used = presReading - prevReading;
+            let totalDue;
+            if (used <= 0) totalDue = settings.minCharge;
+            else totalDue = used * settings.pricePerCubic;
+
+            const bill = {
+                id: Date.now(),
+                customerId: customerId,
+                date: document.getElementById('billDate').value,
+                prevReading: prevReading,
+                presReading: presReading,
+                totalUsed: Math.max(0, used),
+                pricePerCubic: settings.pricePerCubic,
+                totalDue: totalDue,
+                createdAt: new Date().toISOString()
+            };
+
+            const bills = getData('bills');
+            bills.push(bill);
+            saveData('bills', bills);
+
+            if (shouldPrint) printBill(bill);
+            else alert('✅ Bill saved successfully!');
+
+            clearBillForm();
+        }
+
+        // === HISTORY ===
+        function loadFilteredHistory(sortBy = 'date', order = 'desc') {
+            let bills = getData('bills');
+            const customers = getData('customers');
+
+            // Filter by customer            const filter = document.getElementById('historyFilter').value;
+            if (filter !== 'all') {
+                bills = bills.filter(b => b.customerId === parseInt(filter));
+            }
+
+            // Search by customer name or date            const searchTerm = document.getElementById('historySearch')?.value.toLowerCase() || '';
+            if (searchTerm) {
+                bills = bills.filter(bill => {
+                    const customer = customers.find(c => c.id === bill.customerId);
+                    const customerName = customer ? customer.name.toLowerCase() : '';
+                    const dateStr = new Date(bill.date).toLocaleDateString().toLowerCase();
+                    return customerName.includes(searchTerm) || dateStr.includes(searchTerm);
+                });
+            }
+
+            // Sorting
+            bills.sort((a, b) => {
+                if (sortBy === 'date') {
+                    return order === 'asc' ? 
+                        new Date(a.date) - new Date(b.date) : 
+                        new Date(b.date) - new Date(a.date);
+                } else if (sortBy === 'amount') {
+                    return order === 'asc' ? 
+                        a.totalDue - b.totalDue : 
+                        b.totalDue - a.totalDue;
+                }
+                return 0;
+            });
+
+            const container = document.getElementById('historyList');
+            if (bills.length === 0) {
+                container.innerHTML = '<p style="padding:20px; text-align:center; color:var(--muted);">No bills found.</p>';
+                return;
+            }
+
+            container.innerHTML = bills.map(bill => {
+                const customer = customers.find(c => c.id === bill.customerId);
+                const customerName = customer ? customer.name : 'Unknown';
+                const formattedAmount = formatMoney(bill.totalDue);
+                
+                return `
+                    <div style="padding:16px; border:1px solid var(--line); margin:12px 0; border-radius:var(--radius);">
+                        <div style="display:flex; justify-content:space-between; align-items:center; gap:10px; margin-bottom:8px;">
+                            <strong>${customerName}</strong>
+                            <span style="font-size:13px; color:var(--muted);">${new Date(bill.date).toLocaleDateString()}</span>
+                        </div>
+                        <div style="font-size:14px; color:var(--muted);">
+                            Prev: ${bill.prevReading} → Pres: ${bill.presReading} = <strong>${bill.totalUsed} m³</strong>
+                        </div>
+                        <div style="margin-top:12px; font-size:16px; font-weight:700; color:var(--success);">
+                            Total Due: ${formattedAmount}
+                        </div>
+                        <div style="margin-top:12px;">
+                            <button onclick="printBillById(${bill.id})" class="small">🖨️ Print</button>
+                            <button onclick="deleteBill(${bill.id})" class="small danger">🗑️ Delete</button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function sortHistory(by, order) {
+            loadFilteredHistory(by, order);
+        }
+
+        function filterHistory() {
+            loadFilteredHistory(); // Reapply current filters/sort
+        }
+
+        function printBillById(id) {
+            const bill = getData('bills').find(b => b.id === id);
+            if (bill) printBill(bill);
+        }
+
+        function printBill(bill) {
+            const customers = getData('customers');
+            const customer = customers.find(c => c.id === bill.customerId);
+            const customerName = customer ? customer.name : 'Unknown';
+            const settings = getSettings();
+            const amount = formatMoney(bill.totalDue);
+
+            const receiptHTML = `
+                <div style="font-family: Arial, Helvetica, sans-serif; padding: 10px; width: 80mm;">
+                    <h2 style="text-align:center; margin-bottom:5px;">💧 WATER BILL</h2>
+                    <div style="text-align:center; margin-bottom:12px; font-size:13px;">
+                        ${new Date(bill.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long' })}
+                    </div>
+                    <div style="border-top: 1px dashed #000; margin: 10px 0;"></div>
+                    <p><strong>Customer:</strong> ${customerName}</p>
+                    <p><strong>Date:</strong> ${new Date(bill.date).toLocaleDateString()}</p>
+                    <div style="border-top: 1px dashed #000; margin: 10px 0;"></div>
+                    <table style="width:100%; font-size:12px; border-collapse:collapse;">
+                        <tr><td>Previous Reading:</td><td style="text-align:right;">${bill.prevReading} m³</td></tr>
+                        <tr><td>Present Reading:</td><td style="text-align:right;">${bill.presReading} m³</td></tr>
+                        <tr><td>Total Used:</td><td style="text-align:right;">${bill.totalUsed} m³</td></tr>
+                        <tr><td>Rate:</td><td style="text-align:right;">
+                            ${formatMoney(settings.pricePerCubic)}/m³
+                        </td></tr>
+                    </table>
+                    <div style="border-top: 1px dashed #000; margin: 10px 0;"></div>
+                    <div style="text-align:center; font-size:14pt; font-weight:bold; margin:10px 0;">
+                        TOTAL DUE: ${amount}
+                    </div>
+                    <div style="text-align:center; font-size:8pt; margin-top:12px; padding-top:8px; border-top: 1px dashed #000;">
+                        Thank you for your payment!<br>
+                        Printed: ${new Date().toLocaleString()}
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('printReceipt').innerHTML = receiptHTML;
+            window.print();
+        }
+
+        function deleteBill(id) {
+            if (!confirm('Delete this bill?')) return;
+            const bills = getData('bills').filter(b => b.id !== id);
+            saveData('bills', bills);
+            loadFilteredHistory();
+        }
+
+        // === EXCEL EXPORT ===        function exportToExcel() {
+            const bills = getData('bills');
+            const customers = getData('customers');
+            const settings = getSettings();
+            
+            if (bills.length === 0) {
+                alert('No bills to export');
+                return;
+            }
+            
+            const currencySymbol = currencySymbol(settings.currency);
+            const headers = [
+                'Customer Name', 
+                'Date',                 'Previous (m³)', 
+                'Present (m³)', 
+                'Used (m³)', 
+                `Price/${currencySymbol} per m³`,                 `Total Due (${currencySymbol})`
+            ];
+            
+            const data = [headers];
+            
+            bills.forEach(bill => {
+                const customer = customers.find(c => c.id === bill.customerId);
+                data.push([
+                    customer ? customer.name : 'Unknown',
+                    bill.date,
+                    bill.prevReading,
+                    bill.presReading,
+                    bill.totalUsed,
+                    bill.pricePerCubic,
+                    bill.totalDue
+                ]);
+            });
+            
+            const ws = XLSX.utils.aoa_to_sheet(data);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, 'Water Bills');
+            
+            // Set column widths for readability
+            ws['!cols'] = [
+                {wch: 25}, {wch: 12}, {wch: 12}, {wch: 12}, {wch: 10}, {wch: 15}, {wch: 15}
+            ];
+            
+            const filename = `water-bills-${settings.currency}-${new Date().toISOString().split('T')[0]}.xlsx`;
+            XLSX.writeFile(wb, filename);
+        }
+
+        // === INITIALIZATION ===
+        document.addEventListener('DOMContentLoaded', () => {
+            // Set default date
+            document.getElementById('billDate').value = new Date().toISOString().split('T')[0];
+            
+            // Apply saved theme
+            applyThemeFromSession();
+            
+            // Check login state
+            const sess = getSession();
+            if (sess.loggedIn && sess.setupComplete) {
+                document.getElementById('loginSection').style.display = 'none';
+                document.getElementById('appSection').style.display = 'block';
+                loadCustomersList();
+            } else {
+                document.getElementById('loginSection').style.display = 'block';
+                document.getElementById('appSection').style.display = 'none';
+                
+                // Show confirmation only if first-time setup
+                const setupComplete = sess.setupComplete;
+                document.getElementById('confirmSection').style.display = setupComplete ? 'none' : 'block';
+                
+                // Focus password field
+                setTimeout(() => {
+                    document.getElementById('loginPassword').focus();
+                }, 300);
+            }
+        });
+    </script>
+</body>
+</html>
