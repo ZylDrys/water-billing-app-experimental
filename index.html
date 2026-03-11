@@ -3,57 +3,45 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Water Billing App</title>
-    <script>
-        // Function to show a specific section
-        function showSection(sectionId) {
-            var sections = document.querySelectorAll('.section');
-            sections.forEach(function(section) {
-                section.style.display = 'none';
-            });
-            document.getElementById(sectionId).style.display = 'block';
-        }
-
-        // Function to update statistics after an operation
-        function updateStats() {
-            // Implementation here
-        }
-
-        // Export function with currency symbol conflict fixed
-        function exportToExcel() {
-            let currencySymbol = '$'; // Ensured variable name does not conflict
-            // Other export code here
-        }
-
-        // Call updateStats after customer/bill operations
-        function addCustomer() {
-            // Logic for adding customer
-            updateStats(); // Call to ensure the statistics are updated
-        }
-
-        function addBill() {
-            // Logic for adding bill
-            updateStats(); // Call to ensure the statistics are updated
-        }
-
-        // Load settings when entering settings section
-        function loadSettings() {
-            // Logic to load user settings
-        }
-
-        // Ensured all navigation works properly
-        document.addEventListener('DOMContentLoaded', function() {
-            document.getElementById('settingsButton').onclick = function() {
-                loadSettings();
-                showSection('settings'); // Call to show settings section
-            };
-            // Other navigation initializations here
-        });
-    </script>
+    <title>Water Billing Application</title>
+    <style>
+        body { font-family: Arial, sans-serif; }
+        /* Add your styles here */
+    </style>
 </head>
 <body>
-    <div id="settingsButton">Settings</div>
-    <div class="section" id="settings" style="display:none;"></div>
-    <!-- Other sections here -->
+    <h1>Water Billing Application</h1>
+    <section id="billing">
+        <label for="waterUsage">Water Usage (m<sup>3</sup>): </label>
+        <input type="number" id="waterUsage" />
+        <label for="rate">Rate (currency): </label>
+        <input type="number" id="rate" />
+        <button onclick="updateStats()">Calculate</button>
+    </section>
+    <section id="stats" style="display: none;">
+        <h2>Billing Stats</h2>
+        <p id="totalBill"></p>
+    </section>
+    <script>
+        let currencySymbol = "$";
+
+        function showSection(sectionId) {
+            const sections = ["billing", "stats"];
+            sections.forEach(id => {
+                document.getElementById(id).style.display = id === sectionId ? "block" : "none";
+            });
+        }
+
+        function updateStats() {
+            const waterUsage = document.getElementById('waterUsage').value;
+            const rate = document.getElementById('rate').value;
+            const totalBill = waterUsage * rate;
+            document.getElementById('totalBill').innerText = `Total Bill: ${currencySymbol}${totalBill}`;
+            showSection('stats');
+        }
+
+        // Initial call to show billing section
+        showSection('billing');
+    </script>
 </body>
 </html>
