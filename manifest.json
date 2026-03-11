@@ -1,0 +1,11 @@
+{
+    "name": "Water Billing System",
+    "short_name": "Water Bill",
+    "description": "Secure water meter billing system with login, themes & export",
+    "start_url": "./index.html",
+    "display": "standalone",
+    "background_color": "#4a90e2",
+    "theme_color": "#4a90e2",
+    "orientation": "portrait",
+    "icons": []
+}
