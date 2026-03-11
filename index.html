@@ -4,44 +4,83 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Water Billing Application</title>
-    <style>
-        body { font-family: Arial, sans-serif; }
-        /* Add your styles here */
-    </style>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <h1>Water Billing Application</h1>
-    <section id="billing">
-        <label for="waterUsage">Water Usage (m<sup>3</sup>): </label>
-        <input type="number" id="waterUsage" />
-        <label for="rate">Rate (currency): </label>
-        <input type="number" id="rate" />
-        <button onclick="updateStats()">Calculate</button>
-    </section>
-    <section id="stats" style="display: none;">
-        <h2>Billing Stats</h2>
-        <p id="totalBill"></p>
-    </section>
+    <div id="app">
+        <header>
+            <h1>Water Billing Application</h1>
+            <button onclick="showSection('login')">Login</button>
+            <button onclick="showSection('customerManagement')">Customer Management</button>
+            <button onclick="showSection('billCreation')">Bill Creation</button>
+            <button onclick="showSection('transactionHistory')">Transaction History</button>
+            <button onclick="showSection('settings')">Settings</button>
+        </header>
+        <main>
+            <div id="loginSection" class="section">
+                <!-- Login Form -->
+            </div>
+            <div id="customerManagementSection" class="section">
+                <!-- Customer Management Features -->
+            </div>
+            <div id="billCreationSection" class="section">
+                <!-- Bill Creation Features -->
+            </div>
+            <div id="transactionHistorySection" class="section">
+                <!-- Transaction History Features -->
+            </div>
+            <div id="settingsSection" class="section">
+                <!-- Settings Features -->
+            </div>
+        </main>
+    </div>
+    <script src="app.js"></script>
     <script>
-        let currencySymbol = "$";
-
-        function showSection(sectionId) {
-            const sections = ["billing", "stats"];
-            sections.forEach(id => {
-                document.getElementById(id).style.display = id === sectionId ? "block" : "none";
-            });
+        // JavaScript Functions
+        let currencySymbol = '$';
+        function showSection(section) {
+            const sections = document.querySelectorAll('.section');
+            sections.forEach(s => s.style.display = 'none');
+            document.getElementById(section + 'Section').style.display = 'block';
         }
 
         function updateStats() {
-            const waterUsage = document.getElementById('waterUsage').value;
-            const rate = document.getElementById('rate').value;
-            const totalBill = waterUsage * rate;
-            document.getElementById('totalBill').innerText = `Total Bill: ${currencySymbol}${totalBill}`;
-            showSection('stats');
+            // Update customer and bill counts in real-time
         }
 
-        // Initial call to show billing section
-        showSection('billing');
+        function loadSettings() {
+            // Load user settings for the application
+        }
+
+        // Ensure CRUD operations call updateStats() after changes
+        function addCustomer(customer) {
+            // Logic to add customer
+            updateStats();
+        }
+
+        function deleteCustomer(customerId) {
+            // Logic to delete customer
+            updateStats();
+        }
+
+        function saveBill(bill) {
+            // Logic to save bill
+            updateStats();
+        }
+
+        function deleteBill(billId) {
+            // Logic to delete bill
+            updateStats();
+        }
+
+        // Ensure loadSettings is called when entering settings section
+        document.getElementById('settingsSection').addEventListener('show', loadSettings);
+
+        function exportToExcel(data) {
+            // Ensure currencySymbol doesn't conflict
+            const newCurrencySymbol = currencySymbol;
+            // Logic to export data to Excel
+        }
     </script>
 </body>
 </html>
